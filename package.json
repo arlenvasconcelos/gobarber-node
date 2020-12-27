@@ -10,6 +10,7 @@
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
     "bcrypt": "^5.0.0",
+    "cors": "^2.8.5",
     "date-fns": "^2.16.1",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.21.2",

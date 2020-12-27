@@ -20,7 +20,7 @@ export default class AlterProviderFieldToProviderId1599453826945
     );
 
     queryRunner.createForeignKey(
-      'appoinments',
+      'appointments',
       new TableForeignKey({
         name: 'ProviderId',
         columnNames: ['provider_id'],
