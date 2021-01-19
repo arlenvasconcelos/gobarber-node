@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {} from 'bcrypt';
 import { getRepository } from 'typeorm';
 
-import AuthenticateUserService from '../services/AuthenticateUserService';
+import AuthenticateUserService from '@modules/users/services/AuthenticateUserService';
 
 const sessionsRouter = Router();
 

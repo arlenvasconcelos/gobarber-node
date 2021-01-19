@@ -3,20 +3,22 @@ import { hash } from 'bcrypt';
 import { getRepository } from 'typeorm';
 import multer from 'multer';
 
-import User from '../models/User';
+import User from '@modules/users/infra/typeorm/entities/User';
 
-import uploadConfig from '../config/upload';
+import uploadConfig from '@config/upload';
 
-import CreateUserService from '../services/CreateUserService';
-import UpdateUserAvatarService from '../services/UpdateUserAvatarService';
-import ensureAuthenticated from '../middlewares/ensureAuthenticated';
+import UserRepository from '@modules/users/infra/typeorm/repositories/UsersRepository';
+
+import CreateUserService from '@modules/users/services/CreateUserService';
+import UpdateUserAvatarService from '@modules/users/services/UpdateUserAvatarService';
+import ensureAuthenticated from '@modules/users/middlewares/ensureAuthenticated';
 
 const usersRouter = Router();
 const upload = multer(uploadConfig);
 
 usersRouter.get('/', async (request, response) => {
-  const usersRepository = getRepository(User);
-  const users = await usersRepository.find();
+  const userRepository = new UserRepository();
+  const users = await userRepository.getAll();
 
   return response.json(users);
 });
@@ -25,7 +27,8 @@ usersRouter.post('/', async (request, response) => {
   try {
     const { name, email, password } = request.body;
 
-    const createUserService = new CreateUserService();
+    const userRepository = new UserRepository();
+    const createUserService = new CreateUserService(userRepository);
 
     const hashedPassword = await hash(password, 8);
 
@@ -46,7 +49,8 @@ usersRouter.patch(
   ensureAuthenticated,
   upload.single('avatar'),
   async (request, response) => {
-    const updateUserAvatarService = new UpdateUserAvatarService();
+    const userRepository = new UserRepository();
+    const updateUserAvatarService = new UpdateUserAvatarService(userRepository);
 
     const user = await updateUserAvatarService.execute({
       user_id: request.user.id,

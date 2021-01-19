@@ -1,21 +1,22 @@
 import path from 'path';
 import fs from 'fs';
-import { getRepository } from 'typeorm';
 
-import User from '../models/User';
-import uploadConfig from '../config/upload';
-import AppError from '../errors/AppError';
+import uploadConfig from '@config/upload';
+import AppError from '@shared/errors/AppError';
+import User from '../infra/typeorm/entities/User';
 
-interface Request {
+import IUsersRepository from '../repositories/IUsersRepository';
+
+interface IRequest {
   user_id: string;
   avatarFilename: string;
 }
 
 class UpdateUserAvatarService {
-  public async execute({ user_id, avatarFilename }: Request): Promise<User> {
-    const usersReposiroty = getRepository(User);
+  constructor(private usersRepository: IUsersRepository) {}
 
-    const user = await usersReposiroty.findOne(user_id);
+  public async execute({ user_id, avatarFilename }: IRequest): Promise<User> {
+    const user = await this.usersRepository.findById(user_id);
 
     if (!user) {
       throw new AppError('Only authenticated users can chage avatar.', 401);
@@ -32,7 +33,7 @@ class UpdateUserAvatarService {
 
     user.avatar = avatarFilename;
 
-    await usersReposiroty.save(user);
+    await this.usersRepository.update(user);
 
     return user;
   }
