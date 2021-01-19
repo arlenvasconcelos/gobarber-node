@@ -1,9 +1,7 @@
 import { Router } from 'express';
 import { hash } from 'bcrypt';
-import { getRepository } from 'typeorm';
+import { container } from 'tsyringe';
 import multer from 'multer';
-
-import User from '@modules/users/infra/typeorm/entities/User';
 
 import uploadConfig from '@config/upload';
 
@@ -27,8 +25,7 @@ usersRouter.post('/', async (request, response) => {
   try {
     const { name, email, password } = request.body;
 
-    const userRepository = new UserRepository();
-    const createUserService = new CreateUserService(userRepository);
+    const createUserService = container.resolve(CreateUserService);
 
     const hashedPassword = await hash(password, 8);
 
@@ -49,8 +46,7 @@ usersRouter.patch(
   ensureAuthenticated,
   upload.single('avatar'),
   async (request, response) => {
-    const userRepository = new UserRepository();
-    const updateUserAvatarService = new UpdateUserAvatarService(userRepository);
+    const updateUserAvatarService = container.resolve(UpdateUserAvatarService);
 
     const user = await updateUserAvatarService.execute({
       user_id: request.user.id,
